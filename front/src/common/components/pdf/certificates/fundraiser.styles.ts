@@ -26,6 +26,7 @@ export const statusText = (status: number) => {
   if (status === 0) color = colors.black;
   else if (status === 1) color = colors.green;
   else if (status === 2) color = colors.red;
+  else if (status === 3) color = colors.blue;
   return css`
     color: ${color};
   `;

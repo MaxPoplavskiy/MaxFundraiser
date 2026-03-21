@@ -53,6 +53,7 @@ import { useDonateFundraiser } from "./hooks/use-donate-fundraiser.hook";
 import { useModerateFundraiser } from "./hooks/use-moderate-fundraiser.hook";
 import { useReadFundraiser } from "./hooks/use-read-fundraiser.hook";
 import { useVoteFundraiser } from "./hooks/use-vote-fundraiser.hook";
+import { useWithdraw } from "./hooks/use-withdraw.hook";
 import { Section } from "./types/section.type";
 
 export const Fundraiser: React.FC = () => {
@@ -71,6 +72,7 @@ export const Fundraiser: React.FC = () => {
   const { approve, decline } = useModerateFundraiser(
     fundraiserAddress as Address
   );
+  const { canWithdraw, withdraw } = useWithdraw(fundraiserAddress as Address);
 
   const [declineReason, setDeclineReason] = useState("");
   const [selectedSection, setSelectedSection] = useState<Section>(
@@ -130,6 +132,9 @@ export const Fundraiser: React.FC = () => {
           <p css={text(theme)}>
             Goal: {fundraiser.goal.toString()} Token{fundraiser.goal > 1 && "s"}
           </p>
+          <p css={text(theme)}>
+            Collected: {fundraiser.totalDonations.toString()} Token{fundraiser.totalDonations > 1 && "s"}
+          </p>
         </div>
 
         <div css={description(theme)}>
@@ -151,8 +156,25 @@ export const Fundraiser: React.FC = () => {
             <div></div>
           )}
           <h3 css={infoText(theme)}>{fundraiser.beneficiary}</h3>
-          {fundraiser.status === FundraiserStatusValue.APPROVED ? (
-            <Button className={certificateButton} text="Certificate" onClick={() => setDialogOpen(true)} />
+          {fundraiser.status === FundraiserStatusValue.APPROVED &&
+          canWithdraw ? (
+            <Button
+              className={certificateButton}
+              text="Withdraw"
+              onClick={withdraw}
+            />
+          ) : (
+            <div></div>
+          )}
+          {[
+        FundraiserStatusValue.APPROVED,
+        FundraiserStatusValue.FINISHED,
+      ].includes(fundraiser.status) ? (
+            <Button
+              className={certificateButton}
+              text="Certificate"
+              onClick={() => setDialogOpen(true)}
+            />
           ) : (
             <div></div>
           )}
@@ -163,7 +185,10 @@ export const Fundraiser: React.FC = () => {
 
         <Spacer className={bottomSpacer} />
       </div>
-      {fundraiser.status === FundraiserStatusValue.APPROVED && (
+      {[
+        FundraiserStatusValue.APPROVED,
+        FundraiserStatusValue.FINISHED,
+      ].includes(fundraiser.status) && (
         <div css={sectionSelectionContainer}>
           <div css={sectionSelection}>
             <h1
@@ -188,24 +213,32 @@ export const Fundraiser: React.FC = () => {
           <Spacer />
         </div>
       )}
-      {fundraiser.status === FundraiserStatusValue.APPROVED &&
+      {[
+        FundraiserStatusValue.APPROVED,
+        FundraiserStatusValue.FINISHED,
+      ].includes(fundraiser.status) &&
         selectedSection === Section.DONATIONS && (
           <div css={bottomDonationContainer}>
-            <div css={buttonDonateContainer}>
-              <div css={buttonDonateLeftContainer}>
-                <Button
-                  onClick={() => donate(donateAmount, comment)}
-                  type={ButtonType.FILLED}
-                  text="Donate"
-                />
-                <NumberInput
-                  defaultValue={0}
-                  min={0}
-                  onChange={setDonateAmount}
+            {fundraiser.status === FundraiserStatusValue.APPROVED && (
+              <div css={buttonDonateContainer}>
+                <div css={buttonDonateLeftContainer}>
+                  <Button
+                    onClick={() => donate(donateAmount, comment)}
+                    type={ButtonType.FILLED}
+                    text="Donate"
+                  />
+                  <NumberInput
+                    defaultValue={0}
+                    min={0}
+                    onChange={setDonateAmount}
+                  />
+                </div>
+                <TextArea
+                  placeholder="Enter comment"
+                  onChange={commentChange}
                 />
               </div>
-              <TextArea placeholder="Enter comment" onChange={commentChange} />
-            </div>
+            )}
             {donations.map((item) => (
               <>
                 <DonationItem
@@ -218,19 +251,27 @@ export const Fundraiser: React.FC = () => {
             ))}
           </div>
         )}
-      {fundraiser.status === FundraiserStatusValue.APPROVED &&
+      {[
+        FundraiserStatusValue.APPROVED,
+        FundraiserStatusValue.FINISHED,
+      ].includes(fundraiser.status) &&
         selectedSection === Section.COMMENTS && (
           <div css={bottomDonationContainer}>
-            <div css={buttonDonateContainer}>
-              <div css={buttonDonateLeftContainer}>
-                <Button
-                  onClick={() => commentFundraiser(comment)}
-                  type={ButtonType.FILLED}
-                  text="Send comment"
+            {fundraiser.status === FundraiserStatusValue.APPROVED && (
+              <div css={buttonDonateContainer}>
+                <div css={buttonDonateLeftContainer}>
+                  <Button
+                    onClick={() => commentFundraiser(comment)}
+                    type={ButtonType.FILLED}
+                    text="Send comment"
+                  />
+                </div>
+                <TextArea
+                  placeholder="Enter comment"
+                  onChange={commentChange}
                 />
               </div>
-              <TextArea placeholder="Enter comment" onChange={commentChange} />
-            </div>
+            )}
             {comments.map((item) => (
               <>
                 <CommentItem comment={item.comment} address={item.sender} />

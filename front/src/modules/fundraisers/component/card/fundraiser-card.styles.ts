@@ -62,6 +62,7 @@ export const statusText = (theme: Theme, status: string) => {
   if (status === FundraiserStatusValueToString[0]) color = theme.colors.secondary;
   else if (status === FundraiserStatusValueToString[1]) color = colors.green;
   else if (status === FundraiserStatusValueToString[2]) color = colors.red;
+  else if (status === FundraiserStatusValueToString[3]) color = colors.blue;
   return css`
     color: ${color};
   `;

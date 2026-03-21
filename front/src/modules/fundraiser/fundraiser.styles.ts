@@ -47,6 +47,7 @@ export const statusText = (theme: Theme, status: FundraiserStatusValue) => {
   if (status === FundraiserStatusValue.PENDING) color = theme.colors.secondary;
   else if (status === FundraiserStatusValue.APPROVED) color = colors.green;
   else if (status === FundraiserStatusValue.DECLINED) color = colors.red;
+  else if (status === FundraiserStatusValue.FINISHED) color = colors.blue;
   return css`
     color: ${color};
   `;
@@ -60,7 +61,7 @@ export const description = (theme: Theme) => css`
 export const bottomContainer = css`
   display: grid;
   grid-column: span 3;
-  grid-template-columns: min-content 13fr 1fr 1fr;
+  grid-template-columns: min-content 13fr 1fr 1fr 1fr;
   justify-content: space-between;
   align-items: center;
 `;
@@ -86,7 +87,7 @@ export const infoText = (theme: Theme) => css`
   margin: 0;
 `;
 export const certificateButton = css`
-  margin: 0 ${spaces[4]};
+  margin: 0 ${spaces[2]};
 `
 export const bottomSpacer = css`
   grid-column: span 3;
@@ -104,6 +105,7 @@ export const sectionSelectionText = (theme: Theme, isSelect: boolean) => css`
 `;
 export const bottomDonationContainer = css`
   width: 70%;
+  margin-bottom: 15px;
 `;
 export const buttonDonateContainer = css`
   display: flex;

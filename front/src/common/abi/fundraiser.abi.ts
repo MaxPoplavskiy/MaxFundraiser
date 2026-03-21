@@ -2,6 +2,19 @@ import { Abi } from "viem";
 
 export const FundraiserAbi: Abi = [
   {
+    inputs: [],
+    name: "canWithdraw",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
